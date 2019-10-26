@@ -1,0 +1,167 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ques4_newton_raphson</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-09-24"><meta name="DC.source" content="ques4_newton_raphson.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Function Defination</a></li><li><a href="#3">Plotting Graph</a></li><li><a href="#4">Stopping criterium</a></li><li><a href="#5">Iteration Scheme</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+</pre><h2 id="2">Function Defination</h2><pre class="codeinput">syms <span class="string">m</span>;
+c_d = 0.25; v = 36; t = 4; g = 9.81;
+f = @(m)sqrt((g*m)/c_d)*tanh(sqrt((g*c_d)/m)*t)-v;
+fprime = eval([<span class="string">'@(m)'</span> char(diff(f(m)))]);
+</pre><h2 id="3">Plotting Graph</h2><pre class="codeinput">M = 0:200;
+f_M = 0:200;
+n = 1;
+<span class="keyword">for</span> m = 0:200;
+    f_M(n) = f(m);
+    n = n+1;
+<span class="keyword">end</span>
+plot(M, f_M); grid <span class="string">on</span>;
+xlabel(<span class="string">"m"</span>); ylabel(<span class="string">"f(m)"</span>);
+title(<span class="string">"sqrt((g*m)/c_d) * tanh(sqrt((g*c_d)/m)*t)-v"</span>);
+</pre><img vspace="5" hspace="5" src="ques4_newton_raphson_01.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Stopping criterium</h2><pre class="codeinput">fprintf(<span class="string">"(i) Taking the initial guess as x0 = 50 \n"</span>);
+x0 = 50 ; <span class="comment">%  initial approximation to location of root</span>
+TOL = 10^(-5); <span class="comment">% absolute error convergence tolerance</span>
+Nmax =100; <span class="comment">% maximum number of iterations to be performed</span>
+</pre><pre class="codeoutput">(i) Taking the initial guess as x0 = 50 
+</pre><h2 id="5">Iteration Scheme</h2><pre class="codeinput">flag=0;
+<span class="keyword">for</span> i = 1 : Nmax
+    fold=f(x0);
+    fprimeold=fprime(x0);
+	dx = fold / fprimeold;
+    x0 = x0 - dx;
+	fprintf ( <span class="string">'\t\t %3d \t %.10f \n'</span>, i, x0 );
+
+	<span class="keyword">if</span> ( abs(dx) &lt; TOL )
+	   flag=1;
+	   <span class="keyword">break</span>
+	<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">		   1 	 88.3992785546 
+		   2 	 124.0896500820 
+		   3 	 140.5416962708 
+		   4 	 142.7071837659 
+		   5 	 142.7376272539 
+		   6 	 142.7376331084 
+</pre><pre class="codeinput"><span class="keyword">if</span> flag == 0
+    disp(<span class="string">'Maximum number of iterations exceeded.'</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeinput">fprintf(<span class="string">'\n The approximate solution is %f \n'</span>, x0)
+</pre><pre class="codeoutput">
+ The approximate solution is 142.737633 
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear all;
+close all;
+
+%% Function Defination
+syms m;
+c_d = 0.25; v = 36; t = 4; g = 9.81;
+f = @(m)sqrt((g*m)/c_d)*tanh(sqrt((g*c_d)/m)*t)-v;
+fprime = eval(['@(m)' char(diff(f(m)))]);
+
+%% Plotting Graph
+M = 0:200;
+f_M = 0:200;
+n = 1;
+for m = 0:200;
+    f_M(n) = f(m);
+    n = n+1;
+end
+plot(M, f_M); grid on;
+xlabel("m"); ylabel("f(m)");
+title("sqrt((g*m)/c_d) * tanh(sqrt((g*c_d)/m)*t)-v");
+
+%% Stopping criterium
+fprintf("(i) Taking the initial guess as x0 = 50 \n");
+x0 = 50 ; %  initial approximation to location of root
+TOL = 10^(-5); % absolute error convergence tolerance
+Nmax =100; % maximum number of iterations to be performed
+
+%% Iteration Scheme
+flag=0;
+for i = 1 : Nmax
+    fold=f(x0);
+    fprimeold=fprime(x0);
+	dx = fold / fprimeold;
+    x0 = x0 - dx;
+	fprintf ( '\t\t %3d \t %.10f \n', i, x0 );
+	
+	if ( abs(dx) < TOL ) 
+	   flag=1;
+	   break
+	end
+end
+
+%%
+if flag == 0
+    disp('Maximum number of iterations exceeded.')
+end
+
+%%
+fprintf('\n The approximate solution is %f \n', x0)
+##### SOURCE END #####
+--></body></html>

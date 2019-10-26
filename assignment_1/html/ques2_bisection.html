@@ -1,0 +1,232 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ques2_bisection</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-09-24"><meta name="DC.source" content="ques2_bisection.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Bisection Method for finding zeros of a function</a></li><li><a href="#2">Function definition</a></li><li><a href="#3">Plotting function f(t)</a></li><li><a href="#4">Stopping criterium</a></li><li><a href="#5">Main loop</a></li><li><a href="#6">Absolute Error computation</a></li></ul></div><h2 id="1">Bisection Method for finding zeros of a function</h2><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+</pre><h2 id="2">Function definition</h2><pre class="codeinput">u = 2000; v = 750; m_0 = 150000;
+g = 9.81; q = 2700;
+f = @(t) v-u*log(m_0/(m_0-q*t))+g*t;
+a=10;  b=30;
+</pre><h2 id="3">Plotting function f(t)</h2><pre class="codeinput">X = 0:100;
+Y = 0:100;
+n = 1;
+<span class="keyword">for</span> x = 0:100
+Y(n) = f(x);
+n = n + 1;
+<span class="keyword">end</span>
+plot(X,Y); grid <span class="string">on</span>;
+xlabel(<span class="string">"time (t)"</span>);
+ylabel(<span class="string">"f(t)"</span>);
+title(<span class="string">"f(t) = v-u*log(m_0/(m_0-q*t))+g*t"</span>);
+</pre><pre class="codeoutput">Warning: Imaginary parts of complex X and/or
+Y arguments ignored 
+</pre><img vspace="5" hspace="5" src="ques2_bisection_01.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Stopping criterium</h2><pre class="codeinput">TOL = 10^(-6);
+Nmax = floor ( log((b-a)/TOL) / log(2) ) + 1
+pvalues=zeros(Nmax,1);
+</pre><pre class="codeoutput">
+Nmax =
+
+    25
+
+</pre><h2 id="5">Main loop</h2><pre class="codeinput"><span class="keyword">for</span> i = 1 : Nmax
+    p = (a+b)/2;
+	pvalues(i)=p;
+    sfa = f(a);
+    sfp = sign(f(p));
+    fprintf( <span class="string">'\t\t %3d \t (%.6f,%.6f) \t %.10f \n'</span>, i, a, b, p)
+	<span class="keyword">if</span> ( (b-a)&lt;2*TOL || sfp == 0 )
+	   <span class="keyword">break</span>
+	<span class="keyword">elseif</span> ( sfa * sfp &lt; 0 )
+	   b = p;
+	<span class="keyword">else</span>
+	   a = p;
+	   sfa = sfp;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">		   1 	 (10.000000,30.000000) 	 20.0000000000 
+		   2 	 (20.000000,30.000000) 	 25.0000000000 
+		   3 	 (20.000000,25.000000) 	 22.5000000000 
+		   4 	 (20.000000,22.500000) 	 21.2500000000 
+		   5 	 (20.000000,21.250000) 	 20.6250000000 
+		   6 	 (20.625000,21.250000) 	 20.9375000000 
+		   7 	 (20.937500,21.250000) 	 21.0937500000 
+		   8 	 (21.093750,21.250000) 	 21.1718750000 
+		   9 	 (21.093750,21.171875) 	 21.1328125000 
+		  10 	 (21.093750,21.132813) 	 21.1132812500 
+		  11 	 (21.113281,21.132813) 	 21.1230468750 
+		  12 	 (21.123047,21.132813) 	 21.1279296875 
+		  13 	 (21.127930,21.132813) 	 21.1303710938 
+		  14 	 (21.130371,21.132813) 	 21.1315917969 
+		  15 	 (21.131592,21.132813) 	 21.1322021484 
+		  16 	 (21.132202,21.132813) 	 21.1325073242 
+		  17 	 (21.132202,21.132507) 	 21.1323547363 
+		  18 	 (21.132355,21.132507) 	 21.1324310303 
+		  19 	 (21.132355,21.132431) 	 21.1323928833 
+		  20 	 (21.132393,21.132431) 	 21.1324119568 
+		  21 	 (21.132412,21.132431) 	 21.1324214935 
+		  22 	 (21.132412,21.132421) 	 21.1324167252 
+		  23 	 (21.132412,21.132417) 	 21.1324143410 
+		  24 	 (21.132414,21.132417) 	 21.1324155331 
+		  25 	 (21.132414,21.132416) 	 21.1324149370 
+</pre><h2 id="6">Absolute Error computation</h2><pre class="codeinput">plast =p;
+errors=pvalues-plast*ones(Nmax,1);
+fprintf(<span class="string">'Approximate value |  Absolute Error\n\n'</span>)
+fprintf(<span class="string">' %.10f     |  %.10f\n'</span>,[pvalues errors]');
+
+figure; plot(errors); grid <span class="string">on</span>;
+xlabel(<span class="string">"iteration n"</span>);
+ylabel(<span class="string">"|e_{n+1} - e_n|"</span>);
+title(<span class="string">'Absolute error e_n'</span>)
+</pre><pre class="codeoutput">Approximate value |  Absolute Error
+
+ 20.0000000000     |  -1.1324149370
+ 25.0000000000     |  3.8675850630
+ 22.5000000000     |  1.3675850630
+ 21.2500000000     |  0.1175850630
+ 20.6250000000     |  -0.5074149370
+ 20.9375000000     |  -0.1949149370
+ 21.0937500000     |  -0.0386649370
+ 21.1718750000     |  0.0394600630
+ 21.1328125000     |  0.0003975630
+ 21.1132812500     |  -0.0191336870
+ 21.1230468750     |  -0.0093680620
+ 21.1279296875     |  -0.0044852495
+ 21.1303710938     |  -0.0020438433
+ 21.1315917969     |  -0.0008231401
+ 21.1322021484     |  -0.0002127886
+ 21.1325073242     |  0.0000923872
+ 21.1323547363     |  -0.0000602007
+ 21.1324310303     |  0.0000160933
+ 21.1323928833     |  -0.0000220537
+ 21.1324119568     |  -0.0000029802
+ 21.1324214935     |  0.0000065565
+ 21.1324167252     |  0.0000017881
+ 21.1324143410     |  -0.0000005960
+ 21.1324155331     |  0.0000005960
+ 21.1324149370     |  0.0000000000
+</pre><img vspace="5" hspace="5" src="ques2_bisection_02.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Bisection Method for finding zeros of a function
+clear all;
+close all;
+
+%% Function definition
+u = 2000; v = 750; m_0 = 150000;
+g = 9.81; q = 2700;
+f = @(t) v-u*log(m_0/(m_0-q*t))+g*t;
+a=10;  b=30;
+
+%% Plotting function f(t)
+X = 0:100;
+Y = 0:100;
+n = 1;
+for x = 0:100
+Y(n) = f(x);
+n = n + 1;
+end
+plot(X,Y); grid on;
+xlabel("time (t)");
+ylabel("f(t)");
+title("f(t) = v-u*log(m_0/(m_0-q*t))+g*t");
+
+
+%% Stopping criterium
+TOL = 10^(-6);
+Nmax = floor ( log((b-a)/TOL) / log(2) ) + 1
+pvalues=zeros(Nmax,1);
+
+%% Main loop
+for i = 1 : Nmax
+    p = (a+b)/2;
+	pvalues(i)=p;
+    sfa = f(a);
+    sfp = sign(f(p));
+    fprintf( '\t\t %3d \t (%.6f,%.6f) \t %.10f \n', i, a, b, p)
+	if ( (b-a)<2*TOL || sfp == 0 ) 
+	   break
+	elseif ( sfa * sfp < 0 )
+	   b = p;
+	else
+	   a = p;
+	   sfa = sfp;
+    end
+end
+
+%% Absolute Error computation
+plast =p;
+errors=pvalues-plast*ones(Nmax,1);
+fprintf('Approximate value |  Absolute Error\n\n')
+fprintf(' %.10f     |  %.10f\n',[pvalues errors]');
+
+figure; plot(errors); grid on;
+xlabel("iteration n");
+ylabel("|e_{n+1} - e_n|");
+title('Absolute error e_n')
+
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,223 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ques3_bisection</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-09-24"><meta name="DC.source" content="ques3_bisection.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Bisection Method for finding zeros of a function</a></li><li><a href="#2">Function definition</a></li><li><a href="#3">Plotting graph of f(y)</a></li><li><a href="#4">Stopping criterium</a></li><li><a href="#5">Iteration Scheme</a></li><li><a href="#6">Absolute Error computation</a></li></ul></div><h2 id="1">Bisection Method for finding zeros of a function</h2><pre class="codeinput">clear <span class="string">all</span>;
+close <span class="string">all</span>;
+</pre><h2 id="2">Function definition</h2><pre class="codeinput">Q = 20; g = 9.81;
+A = @(y) 3*y + y^2/2;
+B = @(y) 3 + y;
+f = @(y) 1 -(Q^2/(g*(A(y)^3)))*B(y);
+a=0.5;  b=2.5;
+</pre><h2 id="3">Plotting graph of f(y)</h2><pre class="codeinput">X = a:0.1:b;
+Y = a:0.1:b;
+n = 1;
+<span class="keyword">for</span> x = a:0.1:b
+Y(n) = f(x);
+n = n + 1;
+<span class="keyword">end</span>
+plot(X,Y); grid <span class="string">on</span>;
+xlabel(<span class="string">"y"</span>);
+ylabel(<span class="string">"f(y)"</span>);
+title(<span class="string">"f(y) = 1 -({Q^2}/{g*A^3})*B"</span>)
+</pre><img vspace="5" hspace="5" src="ques3_bisection_01.png" style="width:560px;height:420px;" alt=""> <h2 id="4">Stopping criterium</h2><pre class="codeinput">TOL = 10^(-6);
+Nmax = floor ( log((b-a)/TOL) / log(2) ) + 1
+pvalues=zeros(Nmax,1);
+</pre><pre class="codeoutput">
+Nmax =
+
+    21
+
+</pre><h2 id="5">Iteration Scheme</h2><pre class="codeinput"><span class="keyword">for</span> i = 1 : Nmax
+    p = (a+b)/2;
+	pvalues(i)=p;
+    sfa = f(a);
+    sfp = sign(f(p));
+    fprintf( <span class="string">'\t\t %3d \t (%.6f,%.6f) \t %.10f \n'</span>, i, a, b, p)
+	<span class="keyword">if</span> ( (b-a)&lt;2*TOL || sfp == 0 )
+	   <span class="keyword">break</span>
+	<span class="keyword">elseif</span> ( sfa * sfp &lt; 0 )
+	   b = p;
+	<span class="keyword">else</span>
+	   a = p;
+	   sfa = sfp;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">		   1 	 (0.500000,2.500000) 	 1.5000000000 
+		   2 	 (1.500000,2.500000) 	 2.0000000000 
+		   3 	 (1.500000,2.000000) 	 1.7500000000 
+		   4 	 (1.500000,1.750000) 	 1.6250000000 
+		   5 	 (1.500000,1.625000) 	 1.5625000000 
+		   6 	 (1.500000,1.562500) 	 1.5312500000 
+		   7 	 (1.500000,1.531250) 	 1.5156250000 
+		   8 	 (1.500000,1.515625) 	 1.5078125000 
+		   9 	 (1.507813,1.515625) 	 1.5117187500 
+		  10 	 (1.511719,1.515625) 	 1.5136718750 
+		  11 	 (1.513672,1.515625) 	 1.5146484375 
+		  12 	 (1.513672,1.514648) 	 1.5141601563 
+		  13 	 (1.513672,1.514160) 	 1.5139160156 
+		  14 	 (1.513916,1.514160) 	 1.5140380859 
+		  15 	 (1.514038,1.514160) 	 1.5140991211 
+		  16 	 (1.514038,1.514099) 	 1.5140686035 
+		  17 	 (1.514038,1.514069) 	 1.5140533447 
+		  18 	 (1.514053,1.514069) 	 1.5140609741 
+		  19 	 (1.514053,1.514061) 	 1.5140571594 
+		  20 	 (1.514053,1.514057) 	 1.5140552521 
+		  21 	 (1.514053,1.514055) 	 1.5140542984 
+</pre><h2 id="6">Absolute Error computation</h2><pre class="codeinput">plast =p;
+errors=pvalues-plast*ones(Nmax,1);
+fprintf(<span class="string">'Approximate value |  Absolute Error\n\n'</span>)
+fprintf(<span class="string">' %.10f     |  %.10f\n'</span>,[pvalues errors]');
+
+figure; plot(errors); grid <span class="string">on</span>;
+xlabel(<span class="string">"iteration n"</span>);
+ylabel(<span class="string">"|e_{n+1} - e_n|"</span>);
+title(<span class="string">'Absolute error e_n'</span>)
+</pre><pre class="codeoutput">Approximate value |  Absolute Error
+
+ 1.5000000000     |  -0.0140542984
+ 2.0000000000     |  0.4859457016
+ 1.7500000000     |  0.2359457016
+ 1.6250000000     |  0.1109457016
+ 1.5625000000     |  0.0484457016
+ 1.5312500000     |  0.0171957016
+ 1.5156250000     |  0.0015707016
+ 1.5078125000     |  -0.0062417984
+ 1.5117187500     |  -0.0023355484
+ 1.5136718750     |  -0.0003824234
+ 1.5146484375     |  0.0005941391
+ 1.5141601563     |  0.0001058578
+ 1.5139160156     |  -0.0001382828
+ 1.5140380859     |  -0.0000162125
+ 1.5140991211     |  0.0000448227
+ 1.5140686035     |  0.0000143051
+ 1.5140533447     |  -0.0000009537
+ 1.5140609741     |  0.0000066757
+ 1.5140571594     |  0.0000028610
+ 1.5140552521     |  0.0000009537
+ 1.5140542984     |  0.0000000000
+</pre><img vspace="5" hspace="5" src="ques3_bisection_02.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Bisection Method for finding zeros of a function
+clear all;
+close all;
+
+%% Function definition
+Q = 20; g = 9.81;
+A = @(y) 3*y + y^2/2;
+B = @(y) 3 + y;
+f = @(y) 1 -(Q^2/(g*(A(y)^3)))*B(y);
+a=0.5;  b=2.5;
+
+%% Plotting graph of f(y)
+X = a:0.1:b;
+Y = a:0.1:b;
+n = 1;
+for x = a:0.1:b
+Y(n) = f(x);
+n = n + 1;
+end
+plot(X,Y); grid on;
+xlabel("y");
+ylabel("f(y)");
+title("f(y) = 1 -({Q^2}/{g*A^3})*B")
+
+%% Stopping criterium
+TOL = 10^(-6);
+Nmax = floor ( log((b-a)/TOL) / log(2) ) + 1
+pvalues=zeros(Nmax,1);
+
+%% Iteration Scheme
+for i = 1 : Nmax
+    p = (a+b)/2;
+	pvalues(i)=p;
+    sfa = f(a);
+    sfp = sign(f(p));
+    fprintf( '\t\t %3d \t (%.6f,%.6f) \t %.10f \n', i, a, b, p)
+	if ( (b-a)<2*TOL || sfp == 0 ) 
+	   break
+	elseif ( sfa * sfp < 0 )
+	   b = p;
+	else
+	   a = p;
+	   sfa = sfp;
+    end
+end
+
+%% Absolute Error computation
+plast =p;
+errors=pvalues-plast*ones(Nmax,1);
+fprintf('Approximate value |  Absolute Error\n\n')
+fprintf(' %.10f     |  %.10f\n',[pvalues errors]');
+
+figure; plot(errors); grid on;
+xlabel("iteration n");
+ylabel("|e_{n+1} - e_n|");
+title('Absolute error e_n')
+
+##### SOURCE END #####
+--></body></html>
